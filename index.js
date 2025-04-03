@@ -14,22 +14,25 @@ app.use(express.json());
 app.post('/chat', async (req, res) => {
   try {
     const userMessage = req.body.message;
+    const customPrompt = req.body.customPrompt || "";
     
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
         messages: [
+          { role:'system', content: customPrompt || "Sen yardımcı bir chatbotsun. Cevabını vermeden önce kendini tanıt."},
           { role: 'user', content: userMessage }
         ],
-        model: 'llama3-70b-8192', // veya kullanmak istediğiniz diğer modeller
+        model: 'llama-3.3-70b-versatile', // veya kullanmak istediğiniz diğer modeller
         temperature: 0.7,
-        max_tokens: 1000
+        max_tokens: 1000,
+        stream: false
       },
       {
         headers: {
           'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
           'Content-Type': 'application/json'
-        }
+        },
       }
     );
     
